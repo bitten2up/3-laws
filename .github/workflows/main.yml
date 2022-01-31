@@ -1,0 +1,34 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: sdl2
+      run: sudo apt update; sudo apt install sdl2-dev sdl2_image-dev sdl2_net-dev
+    - name: make
+      run: make
+    - name: install mingw
+      run: sudo apt install g++-mingw-w64
+    - name: install sdl2 for mingw
+      run: cd /usr/x86_64-w64-mingw32; sudo wget https://www.libsdl.org/release/SDL2-devel-2.0.20-mingw.tar.gz; tar -xf SDL2-devel-2.0.20-mingw.tar.gz cp SDL2-2.0.20/x86_64-w64-mingw32/ .; ls
+    - name: windows
+      run: make CC=x86_64-w64-mingw32-g++
+      
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ubuntu
+        path: |
+          bin/
+          assets
+        if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
+
